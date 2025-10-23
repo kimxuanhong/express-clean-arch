@@ -16,6 +16,10 @@ const swaggerJsDoc = {
     ],
     tags: [
         {
+            name: 'Authentication',
+            description: 'Authentication endpoints'
+        },
+        {
             name: 'Users',
             description: 'User management endpoints'
         },
@@ -29,11 +33,70 @@ const swaggerJsDoc = {
         }
     ],
     paths: {
+        '/users/login': {
+            post: {
+                tags: ['Authentication'],
+                summary: 'Login user',
+                description: 'Authenticates a user with email and password, returns a JWT token',
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    email: { type: 'string', format: 'email', description: 'User email' },
+                                    password: { type: 'string', description: 'User password (minimum 6 characters)' }
+                                },
+                                required: ['email', 'password']
+                            },
+                            example: {
+                                email: 'john@example.com',
+                                password: 'password123'
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    '200': {
+                        description: 'Login successful, returns JWT token',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        token: { type: 'string', description: 'JWT token for authentication' },
+                                        user: { $ref: '#/components/schemas/User' }
+                                    }
+                                },
+                                example: {
+                                    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                                    user: {
+                                        id: '550e8400-e29b-41d4-a716-446655440000',
+                                        name: 'John Doe',
+                                        email: 'john@example.com',
+                                        createdAt: '2025-10-23T10:30:00.000Z'
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '400': {
+                        description: 'Validation failed or invalid credentials',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/ValidationError' }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         '/users': {
             post: {
                 tags: ['Users'],
                 summary: 'Create a new user',
-                description: 'Creates a new user with the provided name and email',
+                description: 'Creates a new user with the provided name, email, and optional password',
                 requestBody: {
                     required: true,
                     content: {
@@ -43,7 +106,8 @@ const swaggerJsDoc = {
                             },
                             example: {
                                 name: 'John Doe',
-                                email: 'john@example.com'
+                                email: 'john@example.com',
+                                password: 'password123'
                             }
                         }
                     }
@@ -66,11 +130,11 @@ const swaggerJsDoc = {
                         }
                     },
                     '400': {
-                        description: 'Invalid request body - missing or invalid fields',
+                        description: 'Validation failed - missing or invalid fields',
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error'
+                                    $ref: '#/components/schemas/ValidationError'
                                 }
                             }
                         }
@@ -80,7 +144,8 @@ const swaggerJsDoc = {
             get: {
                 tags: ['Users'],
                 summary: 'List all users',
-                description: 'Retrieves a list of all users in the system',
+                description: 'Retrieves a list of all users in the system. Requires JWT authentication.',
+                security: [{ BearerAuth: [] }],
                 responses: {
                     '200': {
                         description: 'List of users retrieved successfully',
@@ -106,6 +171,14 @@ const swaggerJsDoc = {
                                         createdAt: '2025-10-23T11:00:00.000Z'
                                     }
                                 ]
+                            }
+                        }
+                    },
+                    '401': {
+                        description: 'Unauthorized - no or invalid JWT token',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/Error' }
                             }
                         }
                     }
@@ -161,7 +234,8 @@ const swaggerJsDoc = {
             put: {
                 tags: ['Users'],
                 summary: 'Update a user',
-                description: 'Updates an existing user with new name and/or email',
+                description: 'Updates an existing user with new name and/or email. Requires JWT authentication.',
+                security: [{ BearerAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -193,13 +267,27 @@ const swaggerJsDoc = {
                             }
                         }
                     },
+                    '400': {
+                        description: 'Validation failed - invalid input',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/ValidationError' }
+                            }
+                        }
+                    },
+                    '401': {
+                        description: 'Unauthorized - no or invalid JWT token',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/Error' }
+                            }
+                        }
+                    },
                     '404': {
                         description: 'User not found',
                         content: {
                             'application/json': {
-                                schema: {
-                                    $ref: '#/components/schemas/Error'
-                                }
+                                schema: { $ref: '#/components/schemas/Error' }
                             }
                         }
                     }
@@ -208,18 +296,25 @@ const swaggerJsDoc = {
             delete: {
                 tags: ['Users'],
                 summary: 'Delete a user',
-                description: 'Deletes a user from the system',
+                description: 'Deletes a user from the system. Requires JWT authentication.',
+                security: [{ BearerAuth: [] }],
                 responses: {
                     '204': {
                         description: 'User deleted successfully'
+                    },
+                    '401': {
+                        description: 'Unauthorized - no or invalid JWT token',
+                        content: {
+                            'application/json': {
+                                schema: { $ref: '#/components/schemas/Error' }
+                            }
+                        }
                     },
                     '404': {
                         description: 'User not found',
                         content: {
                             'application/json': {
-                                schema: {
-                                    $ref: '#/components/schemas/Error'
-                                }
+                                schema: { $ref: '#/components/schemas/Error' }
                             }
                         }
                     }
@@ -606,6 +701,11 @@ const swaggerJsDoc = {
                         description: 'Email address of the user',
                         minLength: 1,
                         maxLength: 255
+                    },
+                    password: {
+                        type: 'string',
+                        description: 'Password for the user (optional, minimum 6 characters)',
+                        minLength: 6
                     }
                 },
                 required: ['name', 'email']
@@ -785,6 +885,28 @@ const swaggerJsDoc = {
                     }
                 },
                 required: ['message']
+            },
+            ValidationError: {
+                type: 'object',
+                description: 'Validation error response',
+                properties: {
+                    message: {
+                        type: 'string',
+                        description: 'Validation error message'
+                    },
+                    errors: {
+                        type: 'object',
+                        description: 'Detailed validation errors'
+                    }
+                },
+                required: ['message']
+            }
+        },
+        securitySchemes: {
+            BearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT'
             }
         }
     }

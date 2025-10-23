@@ -1,10 +1,11 @@
 class UserController {
-    constructor({createUser, getUser, listUsers, updateUser, deleteUser}) {
+    constructor({createUser, getUser, listUsers, updateUser, deleteUser, loginUser}) {
         this.createUser = createUser;
         this.getUser = getUser;
         this.listUsers = listUsers;
         this.updateUser = updateUser;
         this.deleteUser = deleteUser;
+        this.loginUser = loginUser;
     }
 
     async create(req, res, next) {
@@ -47,6 +48,15 @@ class UserController {
         try {
             await this.deleteUser.execute({id: req.params.id});
             res.status(204).send();
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    async login(req, res, next) {
+        try {
+            const result = await this.loginUser.execute(req.body);
+            res.status(200).json(result);
         } catch (err) {
             next(err);
         }

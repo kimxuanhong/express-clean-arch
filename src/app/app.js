@@ -6,12 +6,25 @@ const GetUser = require('../usecases/user/getUser');
 const ListUsers = require('../usecases/user/listUsers');
 const UpdateUser = require('../usecases/user/updateUser');
 const DeleteUser = require('../usecases/user/deleteUser');
+const LoginUser = require('../usecases/user/loginUser');
 const UserController = require('../interfaces/controllers/userController');
 const makeUserRoutes = require('../interfaces/routes/userRoutes');
 const errorHandler = require('./errors/errorHandler');
 
 function makeApp() {
     const app = express();
+    
+    // CORS middleware
+    app.use((req, res, next) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        if (req.method === 'OPTIONS') {
+            return res.sendStatus(200);
+        }
+        next();
+    });
+    
     app.use(bodyParser());
     const logger = require('./logger');
     const requestId = require('./middleware/requestId');
@@ -28,8 +41,9 @@ function makeApp() {
     const listUsers = new ListUsers({userRepo});
     const updateUser = new UpdateUser({userRepo});
     const deleteUser = new DeleteUser({userRepo});
+    const loginUser = new LoginUser({userRepo});
 
-    const userController = new UserController({createUser, getUser, listUsers, updateUser, deleteUser});
+    const userController = new UserController({createUser, getUser, listUsers, updateUser, deleteUser, loginUser});
 
     app.use('/users', makeUserRoutes({userController}));
 

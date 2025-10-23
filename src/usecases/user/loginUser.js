@@ -1,11 +1,32 @@
+/**
+ * @fileoverview LoginUser Use Case - Handles user authentication
+ */
+
 const bcrypt = require('bcryptjs');
 const { generateToken } = require('../../app/middleware/authJwt');
 
+/**
+ * LoginUser Use Case
+ * @class
+ * @description Handles user authentication and JWT token generation
+ */
 class LoginUser {
+  /**
+   * Creates a LoginUser use case instance
+   * @constructor
+   * @param {{ userRepo: UserRepository }} deps - Dependencies
+   */
   constructor({ userRepo }) {
     this.userRepo = userRepo;
   }
 
+  /**
+   * Executes user login
+   * @async
+   * @param {{ email: string, password: string }} params - Login credentials
+   * @returns {Promise<{ token: string, user: User }>} JWT token and user object
+   * @throws {Error} If credentials invalid or user not found
+   */
   async execute({ email, password }) {
     if (!email || !password) {
       throw new Error('Email and password are required');

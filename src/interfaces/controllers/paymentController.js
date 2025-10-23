@@ -1,4 +1,21 @@
+/**
+ * @fileoverview Payment Controller - Handles HTTP requests for payment operations
+ */
+
+/**
+ * PaymentController - HTTP request handler for payment management
+ * @class
+ */
 class PaymentController {
+    /**
+     * Creates a PaymentController instance
+     * @constructor
+     * @param {{
+     *   createPayment: CreatePayment,
+     *   getPayment: GetPayment,
+     *   listPayments: ListPayments
+     * }} deps - Use case dependencies
+     */
     constructor({createPayment, getPayment, listPayments}) {
         this.createPayment = createPayment;
         this.getPayment = getPayment;
@@ -6,6 +23,14 @@ class PaymentController {
         this.updatePayment = null;
     }
 
+    /**
+     * Creates a new payment
+     * @async
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     * @param {Function} next - Express next middleware function
+     * @returns {Promise<void>}
+     */
     async create(req, res, next) {
         try {
             const p = await this.createPayment.execute(req.body);
@@ -15,6 +40,14 @@ class PaymentController {
         }
     }
 
+    /**
+     * Retrieves a payment by ID
+     * @async
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     * @param {Function} next - Express next middleware function
+     * @returns {Promise<void>}
+     */
     async get(req, res, next) {
         try {
             const p = await this.getPayment.execute({id: req.params.id});
@@ -24,6 +57,14 @@ class PaymentController {
         }
     }
 
+    /**
+     * Retrieves all payments
+     * @async
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     * @param {Function} next - Express next middleware function
+     * @returns {Promise<void>}
+     */
     async list(req, res, next) {
         try {
             const ps = await this.listPayments.execute();
@@ -33,6 +74,14 @@ class PaymentController {
         }
     }
 
+    /**
+     * Updates a payment
+     * @async
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     * @param {Function} next - Express next middleware function
+     * @returns {Promise<void>}
+     */
     async update(req, res, next) {
         try {
             if (!this.updatePayment) return res.status(501).send();

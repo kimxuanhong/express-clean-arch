@@ -1,8 +1,21 @@
+/**
+ * @fileoverview JWT Authentication Middleware - Token verification and generation
+ */
+
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// Middleware to verify JWT token
+/**
+ * Verifies JWT token from Authorization header
+ * @middleware
+ * @param {Object} req - Express request object
+ * @param {string} req.headers.authorization - Bearer token
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void}
+ * @throws {Error} Sends 401 if token missing or invalid
+ */
 const verifyToken = (req, res, next) => {
   const token = req.headers['authorization'];
 
@@ -29,7 +42,12 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// Helper function to generate token
+/**
+ * Generates JWT token for user
+ * @param {string} userId - User's unique identifier
+ * @param {string} userEmail - User's email address
+ * @returns {string} Signed JWT token (expires in 24 hours)
+ */
 const generateToken = (userId, userEmail) => {
   return jwt.sign(
     { id: userId, email: userEmail },

@@ -1,1 +1,0 @@
-{"version":3,"file":"orderRoutes.d.ts","sourceRoot":"","sources":["../../../src/interfaces/routes/orderRoutes.ts"],"names":[],"mappings":"AAAA,OAAgB,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAC1C,OAAO,EAAE,eAAe,EAAE,MAAM,gCAAgC,CAAC;AAWjE,wBAAgB,eAAe,CAAC,EAAE,eAAe,EAAE,EAAE;IAAE,eAAe,EAAE,eAAe,CAAA;CAAE,GAAG,MAAM,CAQjG"}

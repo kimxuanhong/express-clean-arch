@@ -11,11 +11,10 @@ import { UpdateUserData } from '../../domain/types';
  * @class
  * @description In-memory implementation of user repository for development/testing
  */
-export class InMemoryUserRepository extends UserRepository {
+export class InMemoryUserRepository implements UserRepository {
   private users: Map<string, User>;
 
   constructor() {
-    super();
     this.users = new Map();
   }
 

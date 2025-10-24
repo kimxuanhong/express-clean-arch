@@ -11,11 +11,10 @@ import { UpdateOrderData } from '../../domain/types';
  * @class
  * @description In-memory implementation of order repository for development/testing
  */
-export class InMemoryOrderRepository extends OrderRepository {
+export class InMemoryOrderRepository implements OrderRepository {
   private orders: Map<string, Order>;
 
   constructor() {
-    super();
     this.orders = new Map();
   }
 

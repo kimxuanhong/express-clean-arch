@@ -11,11 +11,10 @@ import { UpdatePaymentData } from '../../domain/types';
  * @class
  * @description In-memory implementation of payment repository for development/testing
  */
-export class InMemoryPaymentRepository extends PaymentRepository {
+export class InMemoryPaymentRepository implements PaymentRepository {
   private payments: Map<string, Payment>;
 
   constructor() {
-    super();
     this.payments = new Map();
   }
 
